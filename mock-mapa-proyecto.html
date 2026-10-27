@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Orbita mock — Mapa del proyecto + plan generativo</title>
+  <style>
+    :root {
+      --bg: #f3f0ea;
+      --ink: #1a1a1a;
+      --muted: #5c5c5c;
+      --line: #d5cfc4;
+      --card: #fffcf7;
+      --accent: #0f6b5c;
+      --accent-soft: #d8efe9;
+      --warn: #8a4b12;
+      --warn-soft: #f5e6d3;
+      --phase: #2c3a4a;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", system-ui, sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(ellipse 80% 50% at 10% 0%, #e8efe8 0%, transparent 55%),
+        radial-gradient(ellipse 60% 40% at 100% 10%, #efe6d8 0%, transparent 50%),
+        var(--bg);
+      min-height: 100vh;
+      padding: 28px 20px 60px;
+    }
+
+    .wrap { max-width: 920px; margin: 0 auto; }
+
+    .eyebrow {
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    h1 {
+      font-size: clamp(1.4rem, 3vw, 1.85rem);
+      font-weight: 650;
+      margin: 0 0 6px;
+      letter-spacing: -0.02em;
+    }
+
+    .sub {
+      color: var(--muted);
+      margin: 0 0 28px;
+      max-width: 52ch;
+      line-height: 1.45;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 22px;
+    }
+
+    .chip {
+      font-size: 12px;
+      padding: 5px 10px;
+      border: 1px solid var(--line);
+      background: var(--card);
+      border-radius: 999px;
+    }
+
+    .chip.accent {
+      background: var(--accent-soft);
+      border-color: #b7d9cf;
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .chip.warn {
+      background: var(--warn-soft);
+      border-color: #e2c9a8;
+      color: var(--warn);
+    }
+
+    section {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 20px 22px;
+      margin-bottom: 16px;
+    }
+
+    section h2 {
+      font-size: 0.95rem;
+      margin: 0 0 14px;
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+    }
+
+    section h2 span.hint {
+      font-weight: 400;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px 16px;
+    }
+
+    @media (max-width: 640px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+
+    .field label {
+      display: block;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .field p {
+      margin: 0;
+      font-size: 15px;
+      line-height: 1.35;
+    }
+
+    .phases {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    @media (max-width: 720px) {
+      .phases { grid-template-columns: 1fr 1fr; }
+    }
+
+    .phase {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 10px;
+      background: #faf7f1;
+      min-height: 72px;
+    }
+
+    .phase.current {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+    }
+
+    .phase .n {
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .phase .t {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin-top: 4px;
+    }
+
+    button {
+      appearance: none;
+      border: none;
+      background: var(--accent);
+      color: #fff;
+      font: inherit;
+      font-weight: 600;
+      font-size: 14px;
+      padding: 11px 16px;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    button:hover { filter: brightness(1.05); }
+    button.secondary {
+      background: transparent;
+      color: var(--ink);
+      border: 1px solid var(--line);
+    }
+
+    button:disabled {
+      opacity: 0.55;
+      cursor: default;
+      filter: none;
+    }
+
+    .note {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    #generated { display: none; }
+    #generated.show { display: block; }
+
+    .pipeline {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .pipeline li {
+      display: grid;
+      grid-template-columns: 28px 1fr;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .pipeline li:last-child { border-bottom: none; }
+
+    .dot {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--phase);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      display: grid;
+      place-items: center;
+      margin-top: 2px;
+    }
+
+    .pipeline h3 {
+      margin: 0 0 4px;
+      font-size: 14px;
+    }
+
+    .pipeline p {
+      margin: 0 0 8px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .tasks {
+      margin: 0;
+      padding-left: 18px;
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .footer-tip {
+      margin-top: 20px;
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.45;
+      max-width: 62ch;
+    }
+
+    .legend {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+
+    @media (max-width: 640px) {
+      .legend { grid-template-columns: 1fr; }
+    }
+
+    .legend div {
+      border: 1px dashed var(--line);
+      border-radius: 12px;
+      padding: 12px 14px;
+      background: rgba(255, 252, 247, 0.65);
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .legend strong { display: block; margin-bottom: 4px; font-size: 13px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <p class="eyebrow">Orbita · mock estático (no conectado a la app)</p>
+    <h1>Clínica Dental Norte — Ads</h1>
+    <p class="sub">
+      Esta página muestra las dos ideas: un <em>mapa del proyecto</em> fijo arriba,
+      y un <em>plan generativo</em> que propone fases + tareas al pulsar el botón.
+    </p>
+
+    <div class="legend">
+      <div>
+        <strong>1 · Mapa del proyecto</strong>
+        El “qué / por qué / cómo sabemos que ganamos” del proyecto. Siempre visible.
+      </div>
+      <div>
+        <strong>2 · Plan generativo</strong>
+        No es un embudo de ventas. Es un pipeline propuesto que rellena el tablero con tareas.
+      </div>
+    </div>
+
+    <div class="meta">
+      <span class="chip accent">Tipo: Ads</span>
+      <span class="chip">Cliente: Clínica Dental Norte</span>
+      <span class="chip">Responsable: Marta</span>
+      <span class="chip warn">Bloqueado: falta acceso a Ads</span>
+    </div>
+
+    <!-- PROJECT MAP -->
+    <section aria-labelledby="map-title">
+      <h2 id="map-title">
+        Mapa del proyecto
+        <span class="hint">chuleta · siempre en la ficha del proyecto</span>
+      </h2>
+
+      <div class="grid">
+        <div class="field">
+          <label>Objetivo</label>
+          <p>Más gente que reserve la primera visita dental desde anuncios</p>
+        </div>
+        <div class="field">
+          <label>KPI principal</label>
+          <p>Coste por visita reservada ≤ 45 €</p>
+        </div>
+        <div class="field">
+          <label>Canales</label>
+          <p>Meta Ads + Google Ads</p>
+        </div>
+        <div class="field">
+          <label>Hay que entregar</label>
+          <p>Tracking activo · 2 campañas · informe semanal</p>
+        </div>
+      </div>
+
+      <div class="phases" aria-label="Fases del proyecto">
+        <div class="phase current">
+          <div class="n">Fase 1 · actual</div>
+          <div class="t">Diagnosticar</div>
+        </div>
+        <div class="phase">
+          <div class="n">Fase 2</div>
+          <div class="t">Montar</div>
+        </div>
+        <div class="phase">
+          <div class="n">Fase 3</div>
+          <div class="t">Producir</div>
+        </div>
+        <div class="phase">
+          <div class="n">Fase 4</div>
+          <div class="t">Ejecutar</div>
+        </div>
+        <div class="phase">
+          <div class="n">Fase 5</div>
+          <div class="t">Reportar</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- GENERATE ACTION -->
+    <section>
+      <h2>
+        Plan generativo
+        <span class="hint">botón que propone trabajo a partir del mapa + tipo de proyecto</span>
+      </h2>
+      <div class="actions">
+        <button type="button" id="btn-generate">Generar plan</button>
+        <button type="button" class="secondary" id="btn-reset" disabled>Reiniciar</button>
+        <span class="note" id="status">Tablero vacío · pulsa para proponer tareas</span>
+      </div>
+    </section>
+
+    <!-- GENERATED PIPELINE -->
+    <section id="generated" aria-live="polite">
+      <h2>
+        Pipeline propuesto
+        <span class="hint">borrador IA · una persona acepta antes de crear tareas reales</span>
+      </h2>
+
+      <ol class="pipeline">
+        <li>
+          <div class="dot">1</div>
+          <div>
+            <h3>Diagnosticar</h3>
+            <p>Comprobar accesos y si las reservas se pueden medir.</p>
+            <ul class="tasks">
+              <li>Pedir acceso a Ads al cliente</li>
+              <li>Verificar el evento de conversión de reserva</li>
+            </ul>
+          </div>
+        </li>
+        <li>
+          <div class="dot">2</div>
+          <div>
+            <h3>Montar</h3>
+            <p>Medición + esqueleto de campañas.</p>
+            <ul class="tasks">
+              <li>Instalar / arreglar pixel y conversión</li>
+              <li>Crear campaña de prospección en Meta</li>
+              <li>Crear campaña Search en Google</li>
+            </ul>
+          </div>
+        </li>
+        <li>
+          <div class="dot">3</div>
+          <div>
+            <h3>Producir</h3>
+            <p>Creatividades y landing lista.</p>
+            <ul class="tasks">
+              <li>Brief de 3 creatividades</li>
+              <li>QA de la landing (CTA de reserva)</li>
+            </ul>
+          </div>
+        </li>
+        <li>
+          <div class="dot">4</div>
+          <div>
+            <h3>Ejecutar</h3>
+            <p>Salir en vivo y primera pasada de optimización.</p>
+            <ul class="tasks">
+              <li>Lanzar campañas</li>
+              <li>Primera optimización (día 3–5)</li>
+            </ul>
+          </div>
+        </li>
+        <li>
+          <div class="dot">5</div>
+          <div>
+            <h3>Reportar</h3>
+            <p>Comparar resultados con el KPI de 45 €.</p>
+            <ul class="tasks">
+              <li>Enviar informe semana 1 vs objetivo 45 €</li>
+            </ul>
+          </div>
+        </li>
+      </ol>
+
+      <div class="actions" style="margin-top: 16px;">
+        <button type="button" id="btn-accept">Aceptar → crear 9 tareas en el tablero</button>
+        <span class="note" id="accepted" hidden>Solo mock: en la app real estas serían tareas de Órbita.</span>
+      </div>
+    </section>
+
+    <p class="footer-tip">
+      <strong>Mapa</strong> = el resumen fijo (objetivo, KPI, fases).
+      <strong>Plan generativo</strong> = la checklist propuesta que rellena el tablero.
+      Abre este archivo en el navegador: doble clic en
+      <code>mock-mapa-proyecto.html</code>.
+    </p>
+  </div>
+
+  <script>
+    const btn = document.getElementById("btn-generate");
+    const reset = document.getElementById("btn-reset");
+    const accept = document.getElementById("btn-accept");
+    const panel = document.getElementById("generated");
+    const status = document.getElementById("status");
+    const accepted = document.getElementById("accepted");
+
+    btn.addEventListener("click", () => {
+      panel.classList.add("show");
+      btn.disabled = true;
+      reset.disabled = false;
+      status.textContent = "Plan propuesto · revisa fases y tareas abajo";
+      accepted.hidden = true;
+      panel.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+
+    reset.addEventListener("click", () => {
+      panel.classList.remove("show");
+      btn.disabled = false;
+      reset.disabled = true;
+      status.textContent = "Tablero vacío · pulsa para proponer tareas";
+      accepted.hidden = true;
+    });
+
+    accept.addEventListener("click", () => {
+      accepted.hidden = false;
+      status.textContent = "Aceptado (mock) · aparecerían 9 tareas en el tablero";
+    });
+  </script>
+</body>
+</html>

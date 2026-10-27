@@ -1,0 +1,33 @@
+---
+description: Keep docs/asistente-ia.md in sync when changing Agente IA
+globs: lib/asistente/**,app/**/asistente/**,app/api/asistente/**,app/**/agente-ia/**,app/**/gastos-ia/**,app/**/bloque-gastos-ia.tsx,docs/asistente-ia.md,db/migrations/*asistente*
+alwaysApply: false
+---
+
+# Agente IA → living documentation
+
+Whenever you add or change an **Agente IA / Asistente** feature in the same task, update [`docs/asistente-ia.md`](docs/asistente-ia.md) in the **same change**. Do not leave doc updates for “later”.
+
+## Must update when touching
+
+- New/changed tools → catalogue + **permiso** + **requiereConfirmacion**
+- Permission, scope, or confirmation behaviour
+- Hard restrictions / non-capabilities (SQL, web, admin, secrets, Calendar limits, etc.)
+- Model, secrets, env, deploy scripts for the agent
+- Schema / migrations (`ia_*`, `ultimo_acceso_en`, …)
+- Admin panel (`/admin/agente-ia`) or user gastos UI
+- Cost tracking / limits
+- Known risks or gaps introduced by the change
+- `resumen_periodo` shape: keep **nested** `personal` / `proyectos` / `comunicaciones` (+ `atribucion.reglas`). Do **not** reintroduce flat root aliases that mix “session user did X” with project-scope activity (`creadasEnPeriodo`, etc.). Update docs §6 Attribution scopes in the same change.
+
+## Doc style
+
+- Prefer English (matches current doc); keep tool/permission names exact as in code
+- Prefer editing existing sections over appending vague notes
+- If code and doc disagree, **fix the doc to match code**
+- Mention branch/deploy caveats only if they still apply (`agenteia` / `dev-mst`, etc.)
+
+## Do not
+
+- Skip the doc for “small” tool tweaks
+- Document unrelated portal features in this file

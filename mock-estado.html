@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Órbita — Estado (maqueta)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600&family=Josefin+Sans:wght@400;600&family=Red+Hat+Display:wght@700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --magenta: #fd058d;
+      --magenta-texto: #c4006e;
+      --magenta-suave: #fd058d14;
+      --magenta-borde: #fd058d3d;
+      --tinta: #0a0005;
+      --papel: #ffffff;
+      --suave: #f5f3f6;
+      --linea: #e4dfe7;
+      --linea-fuerte: #d4ced8;
+      --apagado: #5b5560;
+      --novedad: #d4a017;
+      --bien: #155e3a;
+      --mal: #9c1f16;
+      --mal-suave: #c0261b14;
+      --mal-borde: #e8c4c0;
+      --sombra: 0 1px 2px rgba(10, 0, 5, 0.04), 0 4px 12px rgba(10, 0, 5, 0.05);
+      --por-hacer: #c4b8cc;
+      --en-curso: #fd058d;
+      --revision: #d4a017;
+      --hechas: #155e3a;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--papel);
+      color: var(--tinta);
+      font-family: "Josefin Sans", system-ui, sans-serif;
+      font-size: 15px;
+    }
+    .pagina { max-width: 1080px; margin: 0 auto; padding: 28px 24px 48px; }
+    .etiqueta {
+      margin: 0 0 4px;
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--magenta-texto);
+    }
+    h1 {
+      margin: 0;
+      font-family: "Red Hat Display", system-ui, sans-serif;
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    .fecha { margin: 4px 0 0; color: var(--apagado); font-size: 13.5px; }
+    .cabecera { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 18px; }
+    .nota {
+      margin: 0;
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 11px;
+      color: var(--apagado);
+    }
+    .tabs { display: flex; gap: 4px; margin-bottom: 18px; }
+    .tabs button {
+      font: inherit;
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--apagado);
+      background: transparent;
+      border: 0;
+      border-bottom: 2px solid transparent;
+      padding: 6px 12px 8px;
+      cursor: pointer;
+    }
+    .tabs button[aria-selected="true"] {
+      color: var(--tinta);
+      border-bottom-color: var(--magenta);
+    }
+    .rejilla { display: grid; gap: 14px; }
+    .cifras { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+    .tarjeta {
+      background: var(--suave);
+      border: 1px solid var(--linea);
+      border-radius: 10px;
+      padding: 14px 16px;
+    }
+    a.cifra {
+      display: block;
+      text-decoration: none;
+      color: inherit;
+      transition: border-color 160ms ease, box-shadow 160ms ease;
+    }
+    a.cifra:hover { border-color: var(--magenta-borde); box-shadow: var(--sombra); }
+    .cifra .etiqueta { color: var(--apagado); }
+    .cifra strong {
+      display: block;
+      margin-top: 6px;
+      font-family: "Red Hat Display", system-ui, sans-serif;
+      font-size: 40px;
+      line-height: 1;
+      letter-spacing: -0.03em;
+    }
+    .cifra span { display: block; margin-top: 6px; color: var(--apagado); font-size: 13px; }
+    .cifra.mal strong { color: var(--mal); }
+    .cifra.curso strong { color: var(--magenta-texto); }
+    .bloque-titulo {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .bloque-titulo h2 {
+      margin: 0;
+      font-family: "Red Hat Display", system-ui, sans-serif;
+      font-size: 16px;
+      letter-spacing: -0.02em;
+    }
+    .barra {
+      display: flex;
+      height: 28px;
+      border-radius: 8px;
+      overflow: hidden;
+      background: var(--papel);
+      border: 1px solid var(--linea);
+    }
+    .barra span {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 11px;
+      font-weight: 600;
+      min-width: 0;
+    }
+    .barra .ph { background: var(--por-hacer); color: var(--tinta); }
+    .barra .ec { background: var(--en-curso); }
+    .barra .er { background: var(--revision); color: #1a1408; }
+    .barra .te { background: var(--hechas); }
+    .leyenda {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px 18px;
+      margin: 10px 0 0;
+      padding: 0;
+      list-style: none;
+      color: var(--apagado);
+      font-size: 12.5px;
+    }
+    .leyenda li { display: flex; align-items: center; gap: 6px; }
+    .sw { width: 8px; height: 8px; border-radius: 99px; display: inline-block; }
+    .aviso {
+      margin-top: 12px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 1px solid var(--mal-borde);
+      background: var(--mal-suave);
+      color: var(--mal);
+      font-size: 13px;
+    }
+    .cliente { margin-top: 16px; }
+    .cliente:first-of-type { margin-top: 4px; }
+    .cliente h3 {
+      margin: 0 0 6px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--apagado);
+    }
+    .fila {
+      display: grid;
+      grid-template-columns: 10px minmax(0, 1.4fr) minmax(120px, 1fr) auto;
+      gap: 12px;
+      align-items: center;
+      padding: 8px 8px;
+      margin: 0 -8px;
+      border-radius: 8px;
+      text-decoration: none;
+      color: inherit;
+    }
+    .fila:hover { background: color-mix(in srgb, var(--magenta) 4%, var(--papel)); }
+    .punto { width: 8px; height: 8px; border-radius: 99px; }
+    .fila b { display: block; font-size: 14px; font-weight: 600; }
+    .fila small { color: var(--apagado); font-size: 12px; }
+    .pista {
+      height: 6px;
+      border-radius: 99px;
+      background: var(--papel);
+      border: 1px solid var(--linea);
+      overflow: hidden;
+    }
+    .pista i {
+      display: block;
+      height: 100%;
+      background: var(--bien);
+      border-radius: 99px;
+    }
+    .cuenta {
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 11px;
+      color: var(--apagado);
+      white-space: nowrap;
+    }
+    .semana { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
+    .dia {
+      background: var(--papel);
+      border: 1px solid var(--linea);
+      border-radius: 8px;
+      padding: 8px;
+      min-height: 72px;
+    }
+    .dia .nombre {
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 10px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--apagado);
+    }
+    .dia .num { font-family: "Red Hat Display", sans-serif; font-weight: 700; font-size: 16px; }
+    .puntos { display: flex; gap: 4px; margin-top: 8px; flex-wrap: wrap; }
+    .puntos i { width: 7px; height: 7px; border-radius: 99px; }
+    .puntos .reunion { background: var(--magenta); }
+    .puntos .tarea { background: var(--apagado); }
+    .hoy { outline: 1px solid var(--magenta-borde); background: var(--magenta-suave); }
+    #vista-hoy { display: none; color: var(--apagado); font-size: 14px; line-height: 1.45; }
+    body[data-vista="hoy"] #vista-estado { display: none; }
+    body[data-vista="hoy"] #vista-hoy { display: block; }
+    @media (max-width: 760px) {
+      .cifras, .semana { grid-template-columns: 1fr; }
+      .fila { grid-template-columns: 10px minmax(0, 1fr); }
+      .pista, .cuenta { grid-column: 2; }
+    }
+  </style>
+</head>
+<body data-vista="estado">
+  <main class="pagina">
+    <header class="cabecera">
+      <div>
+        <p class="etiqueta">Inicio</p>
+        <h1>Hola, Marta</h1>
+        <p class="fecha">jueves, 15 de octubre</p>
+      </div>
+      <p class="nota">Maqueta · datos inventados</p>
+    </header>
+
+    <div class="tabs" role="tablist">
+      <button type="button" role="tab" id="tab-hoy" aria-selected="false" aria-controls="vista-hoy">Hoy</button>
+      <button type="button" role="tab" id="tab-estado" aria-selected="true" aria-controls="vista-estado">Estado</button>
+    </div>
+
+    <div id="vista-hoy" role="tabpanel">
+      <p>Hoy se queda como está: reuniones, tareas del día y novedades en lista. Esta pestaña no cambia.</p>
+    </div>
+
+    <div id="vista-estado" class="rejilla" role="tabpanel">
+      <section class="cifras" aria-label="Cifras">
+        <a class="tarjeta cifra mal" href="#vencidas">
+          <p class="etiqueta">Vencidas</p>
+          <strong>4</strong>
+          <span>más de 2 días</span>
+        </a>
+        <a class="tarjeta cifra curso" href="#pipeline">
+          <p class="etiqueta">En curso</p>
+          <strong>11</strong>
+          <span>en tus proyectos</span>
+        </a>
+        <a class="tarjeta cifra" href="#pipeline">
+          <p class="etiqueta">Sin leer</p>
+          <strong>3</strong>
+          <span>chats y mensajes</span>
+        </a>
+      </section>
+
+      <section class="tarjeta" id="pipeline">
+        <div class="bloque-titulo">
+          <h2>Mis tareas</h2>
+          <span class="cuenta">40 abiertas y terminadas</span>
+        </div>
+        <div class="barra" role="img" aria-label="8 por hacer, 11 en curso, 4 en revisión, 17 terminadas">
+          <span class="ph" style="flex:8" title="Por hacer · 8">8</span>
+          <span class="ec" style="flex:11" title="En curso · 11">11</span>
+          <span class="er" style="flex:4" title="En revisión · 4">4</span>
+          <span class="te" style="flex:17" title="Terminadas · 17">17</span>
+        </div>
+        <ul class="leyenda">
+          <li><i class="sw" style="background:var(--por-hacer)"></i>Por hacer · 8</li>
+          <li><i class="sw" style="background:var(--en-curso)"></i>En curso · 11</li>
+          <li><i class="sw" style="background:var(--revision)"></i>En revisión · 4</li>
+          <li><i class="sw" style="background:var(--hechas)"></i>Terminadas · 17</li>
+        </ul>
+        <p class="aviso" id="vencidas">4 vencidas, aparte de la barra: vencida no es una columna.</p>
+      </section>
+
+      <section class="tarjeta">
+        <div class="bloque-titulo">
+          <h2>Esta semana</h2>
+          <span class="cuenta">reunión · tarea</span>
+        </div>
+        <div class="semana">
+          <div class="dia"><div class="nombre">Lun 12</div><div class="puntos"><i class="tarea"></i><i class="tarea"></i><i class="reunion"></i></div></div>
+          <div class="dia"><div class="nombre">Mar 13</div><div class="puntos"><i class="reunion"></i><i class="tarea"></i></div></div>
+          <div class="dia"><div class="nombre">Mié 14</div><div class="puntos"><i class="tarea"></i><i class="tarea"></i></div></div>
+          <div class="dia hoy"><div class="nombre">Jue 15</div><div class="puntos"><i class="reunion"></i><i class="reunion"></i><i class="tarea"></i><i class="tarea"></i></div></div>
+          <div class="dia"><div class="nombre">Vie 16</div><div class="puntos"><i class="reunion"></i><i class="tarea"></i><i class="tarea"></i></div></div>
+        </div>
+      </section>
+
+      <section class="tarjeta">
+        <div class="bloque-titulo">
+          <h2>Proyectos activos</h2>
+          <span class="cuenta">por cliente</span>
+        </div>
+
+        <div class="cliente">
+          <h3>Acme · 2 proyectos</h3>
+          <a class="fila" href="#">
+            <i class="punto" style="background:hsl(210 62% 42%)"></i>
+            <div><b>Web 2026</b><small>activo</small></div>
+            <div class="pista" title="12 de 18 terminadas"><i style="width:67%"></i></div>
+            <span class="cuenta">12/18</span>
+          </a>
+          <a class="fila" href="#">
+            <i class="punto" style="background:hsl(28 62% 42%)"></i>
+            <div><b>SEO continuo</b><small>1 vencida</small></div>
+            <div class="pista" title="3 de 9 terminadas"><i style="width:33%"></i></div>
+            <span class="cuenta">3/9</span>
+          </a>
+        </div>
+
+        <div class="cliente">
+          <h3>Norte Studio · 1 proyecto</h3>
+          <a class="fila" href="#">
+            <i class="punto" style="background:hsl(152 62% 36%)"></i>
+            <div><b>Rebrand</b><small>activo</small></div>
+            <div class="pista" title="5 de 8 terminadas"><i style="width:63%"></i></div>
+            <span class="cuenta">5/8</span>
+          </a>
+        </div>
+
+        <div class="cliente">
+          <h3>Interno · 1 proyecto</h3>
+          <a class="fila" href="#">
+            <i class="punto" style="background:hsl(280 45% 48%)"></i>
+            <div><b>Operaciones</b><small>2 vencidas</small></div>
+            <div class="pista" title="2 de 7 terminadas"><i style="width:29%"></i></div>
+            <span class="cuenta">2/7</span>
+          </a>
+        </div>
+      </section>
+    </div>
+  </main>
+  <script>
+    const hoy = document.getElementById("tab-hoy");
+    const estado = document.getElementById("tab-estado");
+    function ir(vista) {
+      document.body.dataset.vista = vista;
+      hoy.setAttribute("aria-selected", vista === "hoy" ? "true" : "false");
+      estado.setAttribute("aria-selected", vista === "estado" ? "true" : "false");
+    }
+    hoy.addEventListener("click", () => ir("hoy"));
+    estado.addEventListener("click", () => ir("estado"));
+  </script>
+</body>
+</html>
