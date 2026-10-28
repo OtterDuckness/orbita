@@ -1,5 +1,5 @@
 -- Migración: accesos directos / herramientas personalizables por usuario.
--- Ejecutar en Cloud SQL Studio (bases `orbita` y `orbita_pruebas` si aplica).
+-- Ejecutar en Cloud SQL Studio (base `orbita`).
 --
 -- Preferencia personal: cada usuario tiene su panel; no afecta a otros.
 

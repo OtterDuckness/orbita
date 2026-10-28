@@ -1,6 +1,6 @@
 -- Migración: historial de acciones reversibles del usuario (UI + asistente).
 -- Retención: 7 días (expira_en). Deshacer aplica before_json / restaurar papelera.
--- Ejecutar en Cloud SQL Studio (bases `orbita` y `orbita_pruebas` si aplica).
+-- Ejecutar en Cloud SQL Studio (base `orbita`).
 
 CREATE TABLE IF NOT EXISTS acciones_reversibles (
   id               CHAR(36)     NOT NULL PRIMARY KEY,

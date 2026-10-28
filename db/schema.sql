@@ -112,11 +112,17 @@ ALTER TABLE clientes
     FOREIGN KEY (responsable_id) REFERENCES usuarios (id)
     ON DELETE SET NULL;
 
--- Admin inicial. Sustituye el correo por el tuyo antes de cargar la base.
+-- Equipo ficticio. Mikhail es el admin de la demo. El resto son colaboradores.
 INSERT INTO usuarios (id, nombre, correo, rol, es_admin) VALUES
-  ('b0000000-0000-4000-8000-000000000001', 'Demo', 'demo@example.com', 'interna', 1)
+  ('b0000000-0000-4000-8000-000000000001', 'Mikhail Tolub', 'mikhailtolub@gmail.com', 'interna', 1),
+  ('b0000000-0000-4000-8000-000000000002', 'Nora Vidal', 'nora.vidal@example.com', 'interna', 0),
+  ('b0000000-0000-4000-8000-000000000003', 'Hugo Serra', 'hugo.serra@example.com', 'interna', 0),
+  ('b0000000-0000-4000-8000-000000000004', 'Lea Costa', 'lea.costa@example.com', 'interna', 0),
+  ('b0000000-0000-4000-8000-000000000005', 'Martín Ruiz', 'martin.ruiz@example.com', 'interna', 0),
+  ('b0000000-0000-4000-8000-000000000006', 'Elsa Prieto', 'elsa.prieto@example.com', 'interna', 0)
 ON DUPLICATE KEY UPDATE
   nombre   = VALUES(nombre),
+  correo   = VALUES(correo),
   rol      = VALUES(rol),
   es_admin = VALUES(es_admin),
   actualizado_en = CURRENT_TIMESTAMP(3);
@@ -245,13 +251,13 @@ CREATE TABLE IF NOT EXISTS usuario_holded_equipo (
 
 UPDATE usuarios
 SET perfil_id = 'a0000000-0000-4000-8000-000000000001'
-WHERE correo IN ('demo@example.com');
+WHERE rol = 'interna';
 
 INSERT IGNORE INTO usuario_permisos (usuario_id, permiso)
 SELECT u.id, pp.permiso
 FROM usuarios u
 INNER JOIN perfil_permisos pp ON pp.perfil_id = u.perfil_id
-WHERE u.correo IN ('demo@example.com');
+WHERE u.rol = 'interna';
 
 -- ---------------------------------------------------------------------------
 -- 4. Tipos de proyecto
@@ -691,7 +697,7 @@ CREATE TABLE IF NOT EXISTS ajustes (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT IGNORE INTO ajustes (clave, valor) VALUES ('proyectos_url_abierta', '0');
-INSERT IGNORE INTO ajustes (clave, valor) VALUES ('agente_ia_activo', '1');
+INSERT IGNORE INTO ajustes (clave, valor) VALUES ('agente_ia_activo', '0');
 INSERT IGNORE INTO ajustes (clave, valor) VALUES ('apartado_correo', '1');
 
 -- ---------------------------------------------------------------------------

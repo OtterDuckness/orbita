@@ -1,8 +1,8 @@
 -- Restaura responsables en mock tras un sync que borró usuarios (FK ON DELETE SET NULL).
 -- Reparte entre internas en lugar de asignarlo todo a un solo admin.
--- Ejecutar contra orbita_pruebas.
+-- Ejecutar contra `orbita` si un sync dejó responsables a NULL.
 
-USE orbita_pruebas;
+USE orbita;
 
 UPDATE clientes c
 INNER JOIN (

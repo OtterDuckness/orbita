@@ -42,6 +42,9 @@ function createPool(database: string): Pool {
       ...comunes,
       host,
       port: Number(process.env.DATABASE_PORT ?? "3306"),
+      // Public IP with "Allow only SSL connections" returns ER_ACCESS_DENIED
+      // for a correct password when the client does not use TLS.
+      ssl: { rejectUnauthorized: false },
     });
   }
 

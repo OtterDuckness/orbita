@@ -51,4 +51,4 @@ ON DUPLICATE KEY UPDATE permiso = VALUES(permiso);
 
 UPDATE usuarios
 SET perfil_id = 'a0000000-0000-4000-8000-000000000001'
-WHERE correo IN ('demo@example.com');
+WHERE rol = 'interna';

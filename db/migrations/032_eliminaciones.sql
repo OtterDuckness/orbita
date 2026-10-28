@@ -1,6 +1,6 @@
 -- Migración: papelera de eliminaciones (tareas, proyectos, clientes) con snapshot para undo.
 -- Retención: 30 días (expira_en). Restaurar reinserta desde snapshot_json.
--- Ejecutar en Cloud SQL Studio (bases `orbita` y `orbita_pruebas` si aplica).
+-- Ejecutar en Cloud SQL Studio (base `orbita`).
 
 CREATE TABLE IF NOT EXISTS eliminaciones (
   id              CHAR(36)     NOT NULL PRIMARY KEY,

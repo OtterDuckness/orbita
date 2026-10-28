@@ -1,5 +1,5 @@
 -- Migración: métricas de prompt cache y web_search en ia_uso
--- Ejecutar en Cloud SQL Studio (bases `orbita` y `orbita_pruebas` si aplica).
+-- Ejecutar en Cloud SQL Studio (base `orbita`).
 
 ALTER TABLE ia_uso
   ADD COLUMN cache_creation_tokens INT UNSIGNED NOT NULL DEFAULT 0

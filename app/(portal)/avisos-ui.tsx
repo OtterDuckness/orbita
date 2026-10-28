@@ -2,6 +2,7 @@
 
 import {
   createContext,
+  Suspense,
   useCallback,
   useContext,
   useEffect,
@@ -29,14 +30,32 @@ export function useAvisosOpcional() {
   return useContext(Ctx);
 }
 
+function AvisoDesdeUrl({ avisar }: { avisar: (codigo: string) => void }) {
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const router = useRouter();
+  const ultimoUrlRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    const desdeUrl = searchParams.get("aviso");
+    if (!desdeUrl || !AVISOS[desdeUrl]) return;
+    const clave = `${pathname}?${desdeUrl}`;
+    if (ultimoUrlRef.current === clave) return;
+    ultimoUrlRef.current = clave;
+    avisar(desdeUrl);
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete("aviso");
+    const q = params.toString();
+    router.replace(q ? `${pathname}?${q}` : pathname, { scroll: false });
+  }, [searchParams, pathname, router, avisar]);
+
+  return null;
+}
+
 export function AvisosProvider({ children }: { children: ReactNode }) {
   const [codigo, setCodigo] = useState<string | null>(null);
   const [montado, setMontado] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const ultimoUrlRef = useRef<string | null>(null);
-  const searchParams = useSearchParams();
-  const pathname = usePathname();
-  const router = useRouter();
 
   const cerrar = useCallback(() => {
     setCodigo(null);
@@ -60,24 +79,14 @@ export function AvisosProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  useEffect(() => {
-    const desdeUrl = searchParams.get("aviso");
-    if (!desdeUrl || !AVISOS[desdeUrl]) return;
-    const clave = `${pathname}?${desdeUrl}`;
-    if (ultimoUrlRef.current === clave) return;
-    ultimoUrlRef.current = clave;
-    avisar(desdeUrl);
-    const params = new URLSearchParams(searchParams.toString());
-    params.delete("aviso");
-    const q = params.toString();
-    router.replace(q ? `${pathname}?${q}` : pathname, { scroll: false });
-  }, [searchParams, pathname, router, avisar]);
-
   const aviso = codigo ? AVISOS[codigo] : null;
 
   return (
     <Ctx.Provider value={{ avisar }}>
       {children}
+      <Suspense fallback={null}>
+        <AvisoDesdeUrl avisar={avisar} />
+      </Suspense>
       {montado && aviso
         ? createPortal(
             <div

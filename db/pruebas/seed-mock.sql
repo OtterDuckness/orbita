@@ -1,11 +1,11 @@
 -- Datos mock (nombres y correos falsos). Idempotente (INSERT IGNORE + UPDATE al final).
--- Ejecutar contra orbita_pruebas tras schema + copiar-catalogo (o sync desde la app).
--- Responsables/colaboradores se reparten entre todas las internas del catálogo.
+-- Ejecutar contra `orbita` después de db/schema.sql.
+-- Responsables y colaboradores se reparten entre las internas del schema.
 
-USE orbita_pruebas;
+USE orbita;
 
-SET @dev = (SELECT id FROM usuarios WHERE correo = 'demo@example.com' LIMIT 1);
-SET @miguel = (SELECT id FROM usuarios WHERE correo = 'demo@example.com' LIMIT 1);
+SET @dev = (SELECT id FROM usuarios WHERE correo = 'mikhailtolub@gmail.com' LIMIT 1);
+SET @miguel = (SELECT id FROM usuarios WHERE correo = 'nora.vidal@example.com' LIMIT 1);
 SET @dev = COALESCE(
   @dev,
   @miguel,
@@ -175,7 +175,7 @@ INSERT IGNORE INTO tareas (
     DATE_ADD(CURRENT_DATE, INTERVAL 1 DAY),
     0, 0, @dev, JSON_ARRAY(@dev),
     'baja', 1,
-    'Si ves esto, estás en orbita_pruebas.',
+    'Nota de la base de demostración. No hay datos reales.',
     NULL, 0
   ),
   (

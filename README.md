@@ -15,10 +15,8 @@ La app admite los correos de `ALLOWLIST_EMAILS`. Si esa variable está vacía, n
 
 ## Base de datos
 
-En una base vacía, ejecuta `db/schema.sql`.
-El usuario inicial es `demo@example.com` (admin). Cámbialo por tu correo antes de cargar la base.
-
-Datos de demostración: `db/pruebas/seed-mock.sql`. Ajusta el `USE` y el correo al usuario que hayas insertado.
+En una base vacía llamada `orbita`, ejecuta `db/schema.sql` y después `db/pruebas/seed-mock.sql`.
+El equipo, los clientes, los proyectos y las tareas de ese seed son ficticios. No hace falta editarlos.
 
 ## Asistente IA
 
