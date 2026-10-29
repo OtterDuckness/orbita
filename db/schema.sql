@@ -81,7 +81,6 @@ CREATE TABLE IF NOT EXISTS usuarios (
   es_admin        TINYINT(1)   NOT NULL DEFAULT 0,
   cliente_id      CHAR(36)     NULL,
   perfil_id       CHAR(36)     NULL,
-  holded_employee_id VARCHAR(64) NULL,
   google_refresh_token TEXT    NULL,
   google_access_token  TEXT    NULL,
   google_token_expiry  DATETIME(3) NULL,
@@ -185,69 +184,8 @@ INSERT INTO perfil_permisos (perfil_id, permiso) VALUES
   ('a0000000-0000-4000-8000-000000000001', 'comunicaciones.editar'),
   ('a0000000-0000-4000-8000-000000000001', 'correo.ver'),
   ('a0000000-0000-4000-8000-000000000001', 'correo.editar'),
-  ('a0000000-0000-4000-8000-000000000001', 'asistente.web'),
-  ('a0000000-0000-4000-8000-000000000001', 'mi_zona.ver'),
-  ('a0000000-0000-4000-8000-000000000001', 'mi_zona.fichar'),
-  ('a0000000-0000-4000-8000-000000000001', 'mi_zona.ausencias'),
-  ('a0000000-0000-4000-8000-000000000001', 'mi_zona.nominas'),
-  ('a0000000-0000-4000-8000-000000000001', 'mi_zona.equipo'),
-  ('a0000000-0000-4000-8000-000000000001', 'mi_zona.aprobar_ausencias'),
-  ('a0000000-0000-4000-8000-000000000001', 'mi_zona.admin')
+  ('a0000000-0000-4000-8000-000000000001', 'asistente.web')
 ON DUPLICATE KEY UPDATE permiso = VALUES(permiso);
-
-INSERT INTO perfiles (id, nombre, descripcion) VALUES
-  (
-    'a0000000-0000-4000-8000-000000000010',
-    'Trabajador',
-    'Mi Zona: fichaje, ausencias y nóminas propias.'
-  ),
-  (
-    'a0000000-0000-4000-8000-000000000011',
-    'Jefe',
-    'Mi Zona propia + ver equipo y cola de ausencias (aprobar si Holded lo permite).'
-  ),
-  (
-    'a0000000-0000-4000-8000-000000000012',
-    'Admin RRHH',
-    'Mi Zona a nivel organización + mapping de empleados Holded.'
-  )
-ON DUPLICATE KEY UPDATE
-  descripcion = VALUES(descripcion),
-  actualizado_en = CURRENT_TIMESTAMP(3);
-
-INSERT INTO perfil_permisos (perfil_id, permiso) VALUES
-  ('a0000000-0000-4000-8000-000000000010', 'mi_zona.ver'),
-  ('a0000000-0000-4000-8000-000000000010', 'mi_zona.fichar'),
-  ('a0000000-0000-4000-8000-000000000010', 'mi_zona.ausencias'),
-  ('a0000000-0000-4000-8000-000000000010', 'mi_zona.nominas'),
-  ('a0000000-0000-4000-8000-000000000011', 'mi_zona.ver'),
-  ('a0000000-0000-4000-8000-000000000011', 'mi_zona.fichar'),
-  ('a0000000-0000-4000-8000-000000000011', 'mi_zona.ausencias'),
-  ('a0000000-0000-4000-8000-000000000011', 'mi_zona.nominas'),
-  ('a0000000-0000-4000-8000-000000000011', 'mi_zona.equipo'),
-  ('a0000000-0000-4000-8000-000000000011', 'mi_zona.aprobar_ausencias'),
-  ('a0000000-0000-4000-8000-000000000012', 'mi_zona.ver'),
-  ('a0000000-0000-4000-8000-000000000012', 'mi_zona.fichar'),
-  ('a0000000-0000-4000-8000-000000000012', 'mi_zona.ausencias'),
-  ('a0000000-0000-4000-8000-000000000012', 'mi_zona.nominas'),
-  ('a0000000-0000-4000-8000-000000000012', 'mi_zona.equipo'),
-  ('a0000000-0000-4000-8000-000000000012', 'mi_zona.aprobar_ausencias'),
-  ('a0000000-0000-4000-8000-000000000012', 'mi_zona.admin')
-ON DUPLICATE KEY UPDATE permiso = VALUES(permiso);
-
-CREATE TABLE IF NOT EXISTS usuario_holded_equipo (
-  jefe_usuario_id       CHAR(36) NOT NULL,
-  trabajador_usuario_id CHAR(36) NOT NULL,
-  creado_en             DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-  PRIMARY KEY (jefe_usuario_id, trabajador_usuario_id),
-  KEY ix_uhe_trabajador (trabajador_usuario_id),
-  CONSTRAINT fk_uhe_jefe
-    FOREIGN KEY (jefe_usuario_id) REFERENCES usuarios (id)
-    ON DELETE CASCADE,
-  CONSTRAINT fk_uhe_trabajador
-    FOREIGN KEY (trabajador_usuario_id) REFERENCES usuarios (id)
-    ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 UPDATE usuarios
 SET perfil_id = 'a0000000-0000-4000-8000-000000000001'
@@ -833,24 +771,6 @@ CREATE TABLE IF NOT EXISTS acciones_reversibles (
     ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Preferencia por usuario: accesos directos / herramientas (nueva pestaña).
-CREATE TABLE IF NOT EXISTS herramientas_usuario (
-  id              CHAR(36)      NOT NULL PRIMARY KEY,
-  usuario_id      CHAR(36)      NOT NULL,
-  nombre          VARCHAR(120)  NOT NULL,
-  categoria       VARCHAR(80)   NOT NULL DEFAULT '',
-  descripcion     VARCHAR(500)  NOT NULL DEFAULT '',
-  url             VARCHAR(2048) NOT NULL,
-  orden           INT           NOT NULL DEFAULT 0,
-  creado_en       DATETIME(3)   NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-  actualizado_en  DATETIME(3)   NOT NULL DEFAULT CURRENT_TIMESTAMP(3)
-                                 ON UPDATE CURRENT_TIMESTAMP(3),
-  KEY ix_hu_usuario_orden (usuario_id, orden),
-  CONSTRAINT fk_hu_usuario
-    FOREIGN KEY (usuario_id) REFERENCES usuarios (id)
-    ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
 -- ---------------------------------------------------------------------------
 -- Notas de diseño
 -- - Filtrar usuarios: WHERE rol = 'interna' (no hace falta JOIN).
@@ -872,5 +792,4 @@ CREATE TABLE IF NOT EXISTS herramientas_usuario (
 -- - eliminaciones: papelera con snapshot JSON; undo 30 días (tarea/proyecto/cliente).
 -- - acciones_reversibles: deshacer acciones UI/asistente (~7 días); UI /ajustes/deshacer.
 -- - usuarios.timezone: IANA (default Europe/Madrid); display vía lib/formato + preferencia Ajustes.
--- - herramientas_usuario: panel de accesos directos personalizable por persona.
 -- ---------------------------------------------------------------------------

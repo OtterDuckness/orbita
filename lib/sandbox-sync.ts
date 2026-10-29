@@ -63,11 +63,10 @@ export async function sincronizarUsuariosAPruebas(): Promise<{ ok: true } | { ok
         rol: string | null;
         es_admin: number | boolean;
         perfil_id: string | null;
-        holded_employee_id: string | null;
         avatar_gcs: string | null;
       })[]
     >(
-      `SELECT id, nombre, correo, rol, es_admin, perfil_id, holded_employee_id, avatar_gcs
+      `SELECT id, nombre, correo, rol, es_admin, perfil_id, avatar_gcs
        FROM usuarios WHERE rol = 'interna'`,
     );
 
@@ -84,11 +83,10 @@ export async function sincronizarUsuariosAPruebas(): Promise<{ ok: true } | { ok
 
     for (const r of internasProd) {
       await pruebas.execute(
-        `INSERT INTO usuarios (id, nombre, correo, rol, es_admin, cliente_id, perfil_id, holded_employee_id, avatar_gcs)
-         VALUES (?, ?, ?, ?, ?, NULL, ?, ?, ?)
+        `INSERT INTO usuarios (id, nombre, correo, rol, es_admin, cliente_id, perfil_id, avatar_gcs)
+         VALUES (?, ?, ?, ?, ?, NULL, ?, ?)
          ON DUPLICATE KEY UPDATE nombre = VALUES(nombre), correo = VALUES(correo),
            rol = VALUES(rol), es_admin = VALUES(es_admin), perfil_id = VALUES(perfil_id),
-           holded_employee_id = VALUES(holded_employee_id),
            avatar_gcs = VALUES(avatar_gcs), actualizado_en = CURRENT_TIMESTAMP(3)`,
         [
           r.id,
@@ -97,7 +95,6 @@ export async function sincronizarUsuariosAPruebas(): Promise<{ ok: true } | { ok
           r.rol,
           r.es_admin,
           r.perfil_id,
-          r.holded_employee_id,
           r.avatar_gcs,
         ],
       );

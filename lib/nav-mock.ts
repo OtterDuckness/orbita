@@ -1,14 +1,12 @@
 export type NavItemId =
   | "panel"
   | "asistente"
-  | "mi_zona"
   | "clientes"
   | "proyectos"
   | "tareas"
   | "calendario"
   | "correo"
-  | "comunicaciones"
-  | "herramientas";
+  | "comunicaciones";
 
 export type NavItem = {
   id: NavItemId;
@@ -26,14 +24,12 @@ export type NavPrefs = {
 export const NAV_REGISTRO: NavItem[] = [
   { id: "panel", href: "/", nombre: "Panel", ordenDefault: 10 },
   { id: "asistente", href: "/asistente", nombre: "Asistente", ordenDefault: 15 },
-  { id: "mi_zona", href: "/mi-zona", nombre: "Mi Zona", ordenDefault: 18 },
   { id: "clientes", href: "/clientes", nombre: "Clientes", ordenDefault: 20 },
   { id: "proyectos", href: "/proyectos", nombre: "Proyectos", ordenDefault: 30 },
   { id: "tareas", href: "/tareas", nombre: "Tareas", ordenDefault: 35 },
   { id: "calendario", href: "/calendario", nombre: "Calendario", ordenDefault: 37 },
   { id: "correo", href: "/correo", nombre: "Correo", ordenDefault: 38 },
   { id: "comunicaciones", href: "/comunicaciones", nombre: "Comunicaciones", ordenDefault: 40 },
-  { id: "herramientas", href: "/herramientas", nombre: "Herramientas", ordenDefault: 45 },
 ];
 
 const IDS = new Set(NAV_REGISTRO.map((i) => i.id));

@@ -18,7 +18,7 @@ Una persona abre el portal y ve el trabajo que de verdad es suyo: cuentas de las
 
 La entrada es con Google, mediante Auth.js. Si la lista de correos permitidos está vacía, no entra nadie. Una dirección incluida puede entrar, y el primer inicio de sesión correcto crea su usuario como miembro interno. A partir de ahí, la base de datos decide qué puede ver. Haber iniciado sesión con Google no basta.
 
-Los admins tienen todos los permisos. El resto tiene un perfil, o un conjunto de permisos a medida, módulo a módulo: ver y editar clientes, proyectos, tareas, comunicaciones y correo, más las acciones de RRHH en Mi Zona. Las páginas comprueban ese permiso en el servidor antes de pintarse. El asistente usa la misma comprobación, así que nadie puede pedirle al chat algo que la pantalla rechazaría.
+Los admins tienen todos los permisos. El resto tiene un perfil, o un conjunto de permisos a medida, módulo a módulo: ver y editar clientes, proyectos, tareas, comunicaciones y correo. Las páginas comprueban ese permiso en el servidor antes de pintarse. El asistente usa la misma comprobación, así que nadie puede pedirle al chat algo que la pantalla rechazaría.
 
 Los usuarios externos son contactos del cliente ligados a una cuenta. No son una segunda copia del equipo interno.
 
@@ -36,8 +36,6 @@ Los usuarios externos son contactos del cliente ligados a una cuenta. No son una
 
 **Correo.** Una bandeja de Gmail dentro del portal: leer, y enviar si la persona tiene permiso de edición. Los destinatarios se pueden sugerir a partir del equipo y de los correos de acceso de los clientes. Usa la cuenta de Google de quien ha iniciado sesión. No es un buzón compartido guardado en la base de datos.
 
-**Herramientas.** Una lista personal de enlaces, en el orden que elija cada persona.
-
 **Sugerencias.** Cualquiera puede enviar una sugerencia desde la barra lateral. Los admins las leen en una bandeja.
 
 ## Cuando algo sale mal
@@ -45,10 +43,6 @@ Los usuarios externos son contactos del cliente ligados a una cuenta. No son una
 Los borrados son lógicos. Clientes, proyectos y tareas pasan a **Eliminados** y se pueden restaurar. Aparte, las acciones recientes se pueden deshacer desde **Ajustes**. El asistente también puede listar y deshacer esas acciones, siempre con los permisos de quien llama.
 
 Los admins tienen además un registro de auditoría, gestión de usuarios, perfiles de permisos e interruptores que ocultan secciones enteras del menú (incluido el asistente) sin un despliegue.
-
-## Mi Zona
-
-Mi Zona es el rincón de RRHH: fichaje, ausencias y nóminas, apoyado en la API de Holded. Permanece en silencio mientras no esté `HOLDED_API_KEY`. Un admin puede previsualizar la vista de trabajador y la de responsable sin perder su rol real de admin.
 
 ## El asistente
 
@@ -102,7 +96,7 @@ En el cliente de OAuth, añade `http://localhost:3000/api/auth/callback/google`.
 
 Después carga `db/schema.sql` y, a continuación, `db/pruebas/seed-mock.sql`.
 
-`ANTHROPIC_API_KEY`, `GCS_BUCKET`, `RESEND_API_KEY`, `CRON_SECRET`, `GEMINI_API_KEY` y `HOLDED_API_KEY` son opcionales. Déjalas vacías y la pantalla correspondiente se explica sola o permanece en reposo. En esta demo no hay una segunda base de datos. Deja `DATABASE_NAME_PRUEBAS` sin definir.
+`ANTHROPIC_API_KEY`, `GCS_BUCKET`, `RESEND_API_KEY`, `CRON_SECRET` y `GEMINI_API_KEY` son opcionales. Déjalas vacías y la pantalla correspondiente se explica sola o permanece en reposo. En esta demo no hay una segunda base de datos. Deja `DATABASE_NAME_PRUEBAS` sin definir.
 
 ---
 
@@ -124,7 +118,7 @@ A person opens the portal and sees the work that is actually theirs: accounts th
 
 Entry is Google, via Auth.js. An empty allowlist lets nobody in. A listed address may enter, and the first successful login creates their user as an internal teammate. After that, the database decides what they can see. Being signed in with Google is not enough.
 
-Admins get every permission. Everyone else gets a profile, or a custom set of permissions, module by module: view and edit for clients, projects, tasks, communications, and mail, plus the HR actions in Mi Zona. Pages check that permission on the server before they render. The assistant uses the same check, so a person cannot ask the chat to do something the screen would refuse.
+Admins get every permission. Everyone else gets a profile, or a custom set of permissions, module by module: view and edit for clients, projects, tasks, communications, and mail. Pages check that permission on the server before they render. The assistant uses the same check, so a person cannot ask the chat to do something the screen would refuse.
 
 External users are client contacts tied to one account. They are not a second copy of the internal team.
 
@@ -142,8 +136,6 @@ External users are client contacts tied to one account. They are not a second co
 
 **Correo.** A Gmail inbox inside the portal: read, and send when the user has the edit permission. Recipients can be suggested from the team and from client access emails. This uses the signed-in person's own Google account. It is not a shared mailbox baked into the database.
 
-**Herramientas.** A personal list of links the user wants at hand, ordered by them.
-
 **Sugerencias.** Anyone can send a suggestion from the sidebar. Admins read them in an inbox.
 
 ## When something goes wrong
@@ -151,10 +143,6 @@ External users are client contacts tied to one account. They are not a second co
 Deletes are soft. Clients, projects, and tasks go to **Eliminados** and can be restored. Separate from that, recent actions can be undone from **Ajustes**. The assistant can list and undo those actions too, still under the caller's permissions.
 
 Admins also get an audit log, user management, permission profiles, and switches that hide whole sections of the menu (including the assistant) without a deploy.
-
-## Mi Zona
-
-Mi Zona is the HR corner: clock-in, absences, and payslips, backed by the Holded API. It stays quiet unless `HOLDED_API_KEY` is set. An admin can preview the worker view and the manager view without giving up their real admin role.
 
 ## The assistant
 
@@ -208,4 +196,4 @@ On the OAuth client, add `http://localhost:3000/api/auth/callback/google`. Also 
 
 Then load `db/schema.sql`, then `db/pruebas/seed-mock.sql`.
 
-`ANTHROPIC_API_KEY`, `GCS_BUCKET`, `RESEND_API_KEY`, `CRON_SECRET`, `GEMINI_API_KEY`, and `HOLDED_API_KEY` are optional. Leave them empty and the corresponding screen explains itself or stays idle. There is no second database in this demo. Leave `DATABASE_NAME_PRUEBAS` unset.
+`ANTHROPIC_API_KEY`, `GCS_BUCKET`, `RESEND_API_KEY`, `CRON_SECRET`, and `GEMINI_API_KEY` are optional. Leave them empty and the corresponding screen explains itself or stays idle. There is no second database in this demo. Leave `DATABASE_NAME_PRUEBAS` unset.

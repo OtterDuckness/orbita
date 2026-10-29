@@ -34,13 +34,11 @@ function filtrarNavPorPermisos(
   puedeTareas: boolean,
   puedeComunicaciones: boolean,
   puedeCorreo: boolean,
-  puedeMiZona: boolean,
   apartados: ApartadosActivos,
   esAdmin: boolean,
 ) {
   return secciones.filter((s) => {
     if (!apartadoVisible(apartados, s.id, esAdmin)) return false;
-    if (s.id === "mi_zona") return puedeMiZona;
     if (s.id === "clientes") return puedeClientes;
     if (s.id === "proyectos") return puedeProyectos;
     if (s.id === "tareas") return puedeTareas;
@@ -66,7 +64,6 @@ export default async function PortalLayout({ children }: { children: React.React
   const puedeTareas = usuario ? usuarioPuede(usuario, "tareas.ver") : false;
   const puedeComunicaciones = usuario ? usuarioPuede(usuario, "comunicaciones.ver") : false;
   const puedeCorreo = usuario ? usuarioPuede(usuario, "correo.ver") : false;
-  const puedeMiZona = usuario ? usuarioPuede(usuario, "mi_zona.ver") : false;
   const puedeEliminados = usuario
     ? usuarioPuede(usuario, "tareas.editar") ||
       usuarioPuede(usuario, "proyectos.editar") ||
@@ -87,7 +84,6 @@ export default async function PortalLayout({ children }: { children: React.React
     puedeTareas,
     puedeComunicaciones,
     puedeCorreo,
-    puedeMiZona,
     apartados,
     esAdmin,
   );

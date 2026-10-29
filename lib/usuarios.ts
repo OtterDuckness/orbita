@@ -14,7 +14,6 @@ import {
   puedeConPermisos,
   type Permiso,
 } from "@/lib/permisos";
-import { permisosDeVistaMiZona } from "@/lib/vista-mi-zona";
 
 export type Usuario = {
   id: string;
@@ -39,17 +38,10 @@ export type UsuarioAuth = {
   /** Admin real en BD (ignora cookie vista usuario). Para switches de simulación. */
   esAdminReal: boolean;
   perfilId: string | null;
-  /** ID de empleado en Holded (Mi Zona), si está vinculado. */
-  holdedEmployeeId: string | null;
   permisos: Permiso[];
   avatarUrl: string | null;
   /** IANA, p. ej. Europe/Madrid. */
   timezone: string;
-  /**
-   * Solo admins reales: simula permisos Mi Zona de trabajador/jefe.
-   * No afecta el resto del portal.
-   */
-  vistaMiZona: "trabajador" | "jefe" | null;
 };
 
 /** URL de la API de avatar si hay objeto en GCS. */
@@ -77,7 +69,6 @@ type AuthRow = RowDataPacket & {
   rol: string | null;
   es_admin: number | boolean;
   perfil_id: string | null;
-  holded_employee_id?: string | null;
   avatar_gcs?: string | null;
   timezone?: string | null;
 };
@@ -195,22 +186,12 @@ export async function obtenerUsuarioAuthPorCorreo(
   const email = correo.trim().toLowerCase();
   const pool = await getPool();
   let row: AuthRow | undefined;
-  try {
-    const [rows] = await pool.execute<AuthRow[]>(
-      `SELECT id, nombre, correo, rol, es_admin, perfil_id, holded_employee_id, avatar_gcs, timezone
-       FROM usuarios WHERE correo = ? LIMIT 1`,
-      [email],
-    );
-    row = rows[0];
-  } catch {
-    // Migración 038 aún no aplicada: sin columna holded_employee_id.
-    const [rows] = await pool.execute<AuthRow[]>(
-      `SELECT id, nombre, correo, rol, es_admin, perfil_id, avatar_gcs, timezone
-       FROM usuarios WHERE correo = ? LIMIT 1`,
-      [email],
-    );
-    row = rows[0];
-  }
+  const [rows] = await pool.execute<AuthRow[]>(
+    `SELECT id, nombre, correo, rol, es_admin, perfil_id, avatar_gcs, timezone
+     FROM usuarios WHERE correo = ? LIMIT 1`,
+    [email],
+  );
+  row = rows[0];
   if (!row) return null;
 
   const esAdminDb = Boolean(row.es_admin);
@@ -244,12 +225,6 @@ export async function obtenerUsuarioAuthPorCorreo(
   const timezone = parseZona(row.timezone);
   aplicarZona(timezone);
 
-  let vistaMiZona: "trabajador" | "jefe" | null = null;
-  if (esAdminDb) {
-    const { leerVistaMiZonaParaAdmin } = await import("@/lib/vista-mi-zona");
-    vistaMiZona = await leerVistaMiZonaParaAdmin(row.correo);
-  }
-
   return {
     id: row.id,
     nombre: row.nombre,
@@ -258,11 +233,9 @@ export async function obtenerUsuarioAuthPorCorreo(
     esAdmin,
     esAdminReal: esAdminDb,
     perfilId: row.perfil_id,
-    holdedEmployeeId: row.holded_employee_id?.trim() || null,
     permisos,
     avatarUrl: urlAvatarDe(row.id, row.avatar_gcs),
     timezone,
-    vistaMiZona,
   };
 }
 
@@ -279,9 +252,6 @@ export async function guardarTimezoneUsuario(
 }
 
 export function usuarioPuede(usuario: UsuarioAuth, permiso: Permiso): boolean {
-  if (permiso.startsWith("mi_zona.") && usuario.vistaMiZona) {
-    return permisosDeVistaMiZona(usuario.vistaMiZona).includes(permiso);
-  }
   return puedeConPermisos(usuario.permisos, usuario.esAdmin, permiso);
 }
 

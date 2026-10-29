@@ -5,10 +5,6 @@ import type { PerfilLista, UsuarioInternoAsignacion } from "@/lib/perfiles";
 import { AvatarUsuario } from "../../avatar-usuario";
 import { Boton } from "../../boton";
 import { asignarPerfilAction } from "../../ajustes/acciones-perfiles";
-import {
-  guardarEquipoJefeAction,
-  guardarHoldedEmployeeIdAction,
-} from "../../mi-zona/acciones";
 import { actualizarAdminAction, eliminarUsuarioAction } from "./acciones";
 
 function fmtFecha(iso: string | null) {
@@ -27,21 +23,17 @@ export function ListaUsuarios({
   usuarios,
   perfiles,
   actorId,
-  equipos = {},
 }: {
   usuarios: UsuarioInternoAsignacion[];
   perfiles: PerfilLista[];
   actorId: string;
-  /** jefeId → trabajadorIds */
-  equipos?: Record<string, string[]>;
 }) {
   return (
     <section className="grid gap-3">
       <div>
         <h2 className="font-display font-bold text-[18px] tracking-tight">Equipo interno</h2>
         <p className="text-apagado text-[13px] mt-1">
-          Asigna un perfil como plantilla o afina los permisos persona a persona. Vincula el ID de
-          empleado Holded para Mi Zona. El uso del asistente está en{" "}
+          Asigna un perfil como plantilla o afina los permisos persona a persona. El uso del asistente está en{" "}
           <Link href="/admin/agente-ia" className="text-magenta-texto hover:underline">
             Agente IA
           </Link>
@@ -130,63 +122,6 @@ export function ListaUsuarios({
                   Modificar permisos
                 </Link>
               </div>
-
-              <form
-                action={guardarHoldedEmployeeIdAction}
-                className="flex flex-wrap items-end gap-2 border-t border-linea pt-3"
-              >
-                <input type="hidden" name="usuario_id" value={u.id} />
-                <label className="grid gap-1 text-[12px] text-apagado min-w-[200px] flex-1">
-                  Holded employee id
-                  <input
-                    name="holded_employee_id"
-                    defaultValue={u.holdedEmployeeId ?? ""}
-                    placeholder="id en Holded"
-                    className="control rounded-[8px] px-2 py-1.5 text-[13px] font-mono"
-                  />
-                </label>
-                <Boton type="submit" className="!py-1.5 !px-3 !text-[13px]" textoEnviando="…">
-                  Guardar Holded
-                </Boton>
-              </form>
-
-              <form
-                action={guardarEquipoJefeAction}
-                className="grid gap-2 border-t border-linea pt-3"
-              >
-                <input type="hidden" name="jefe_usuario_id" value={u.id} />
-                <p className="text-[12px] text-apagado">
-                  Equipo a cargo (para jefes: ausencias / fichaje de subordinados)
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {usuarios
-                    .filter((t) => t.id !== u.id)
-                    .map((t) => {
-                      const checked = (equipos[u.id] ?? []).includes(t.id);
-                      return (
-                        <label
-                          key={t.id}
-                          className="inline-flex items-center gap-1.5 text-[12px] border border-linea rounded-[6px] px-2 py-1"
-                        >
-                          <input
-                            type="checkbox"
-                            name="trabajador_id"
-                            value={t.id}
-                            defaultChecked={checked}
-                          />
-                          {t.nombre}
-                        </label>
-                      );
-                    })}
-                </div>
-                <Boton
-                  type="submit"
-                  className="!py-1.5 !px-3 !text-[13px] w-fit"
-                  textoEnviando="…"
-                >
-                  Guardar equipo
-                </Boton>
-              </form>
             </li>
           );
         })}

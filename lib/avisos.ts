@@ -210,18 +210,6 @@ export const AVISOS: Record<string, { tono: "bien" | "mal"; texto: string }> = {
     tono: "bien",
     texto: "Has vuelto a los privilegios de administrador.",
   },
-  vista_mi_zona_trabajador: {
-    tono: "bien",
-    texto: "Mi Zona: viendo como trabajador.",
-  },
-  vista_mi_zona_jefe: {
-    tono: "bien",
-    texto: "Mi Zona: viendo como jefe.",
-  },
-  vista_mi_zona_off: {
-    tono: "bien",
-    texto: "Mi Zona: vista admin restaurada.",
-  },
   agente_ia_off: {
     tono: "mal",
     texto: "El asistente solo está disponible para administradores.",
@@ -229,42 +217,6 @@ export const AVISOS: Record<string, { tono: "bien" | "mal"; texto: string }> = {
   apartado_off: {
     tono: "mal",
     texto: "Este apartado solo está disponible para administradores.",
-  },
-  herramienta_creada: { tono: "bien", texto: "Herramienta añadida a tu panel." },
-  herramienta_actualizada: { tono: "bien", texto: "Herramienta actualizada." },
-  herramienta_eliminada: { tono: "bien", texto: "Herramienta quitada de tu panel." },
-  url_invalida: {
-    tono: "mal",
-    texto: "La URL debe empezar por http:// o https://.",
-  },
-  fichaje_entrada: { tono: "bien", texto: "Entrada fichada en Holded." },
-  fichaje_salida: { tono: "bien", texto: "Salida fichada en Holded." },
-  fichaje_pausa: { tono: "bien", texto: "Pausa iniciada." },
-  fichaje_despausa: { tono: "bien", texto: "Pausa finalizada." },
-  ausencia_solicitada: { tono: "bien", texto: "Solicitud de ausencia enviada a Holded." },
-  ausencia_aprobada: { tono: "bien", texto: "Ausencia aprobada." },
-  holded_vinculo_guardado: { tono: "bien", texto: "ID de empleado Holded guardado." },
-  holded_equipo_guardado: { tono: "bien", texto: "Equipo del jefe actualizado." },
-  holded_sin_config: {
-    tono: "mal",
-    texto: "HOLDED_API_KEY no está configurada en el servidor.",
-  },
-  holded_sin_vinculo: {
-    tono: "mal",
-    texto: "Este usuario no tiene ID de empleado Holded vinculado.",
-  },
-  holded_sin_acceso: { tono: "mal", texto: "No tienes permiso sobre ese empleado." },
-  holded_approve_no_soportado: {
-    tono: "mal",
-    texto: "Holded no expone aprobación de ausencias por API. Apruébalas en Holded.",
-  },
-  holded_error: { tono: "mal", texto: "Error al hablar con Holded." },
-  holded_http_401: { tono: "mal", texto: "Token Holded inválido o revocado." },
-  holded_http_403: { tono: "mal", texto: "El token Holded no tiene permiso para esta acción." },
-  holded_http_404: { tono: "mal", texto: "Recurso no encontrado en Holded." },
-  holded_http_501: {
-    tono: "mal",
-    texto: "Operación no soportada por la API Holded.",
   },
 };
 

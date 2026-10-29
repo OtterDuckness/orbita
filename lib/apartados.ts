@@ -35,12 +35,6 @@ const META: Record<
     texto:
       "Si está apagado, el asistente desaparece del menú y no pueden usarlo quienes no son admin. Los administradores siempre tienen acceso al chat y a la API. El panel Admin → Agente IA (consumo y chats) sigue disponible.",
   },
-  mi_zona: {
-    clave: "apartado_mi_zona",
-    defecto: "0",
-    texto:
-      "Control horario, ausencias y nóminas. Apagado, solo lo ven los administradores. Quien no tenga el permiso de Mi Zona sigue sin verlo aunque esto esté encendido.",
-  },
   clientes: {
     clave: "apartado_clientes",
     defecto: "1",
@@ -76,12 +70,6 @@ const META: Record<
     defecto: "1",
     texto:
       "Mensajes internos. Apagado, desaparece del menú y la URL no abre para quien no es admin.",
-  },
-  herramientas: {
-    clave: "apartado_herramientas",
-    defecto: "0",
-    texto:
-      "Accesos directos. Apagado, solo lo ven los administradores hasta que lo actives para el equipo.",
   },
 };
 
@@ -152,8 +140,6 @@ export async function guardarApartados(
 
 function permisoDe(id: ApartadoId): Permiso | null {
   switch (id) {
-    case "mi_zona":
-      return "mi_zona.ver";
     case "clientes":
       return "clientes.ver";
     case "proyectos":

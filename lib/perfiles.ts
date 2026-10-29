@@ -26,7 +26,6 @@ export type UsuarioInternoAsignacion = {
   esAdmin: boolean;
   perfilId: string | null;
   perfilNombre: string | null;
-  holdedEmployeeId: string | null;
   permisos: Permiso[];
   avatarUrl: string | null;
   ultimoAccesoEn: string | null;
@@ -55,7 +54,6 @@ type UsuarioRow = RowDataPacket & {
   es_admin: number | boolean;
   perfil_id: string | null;
   perfil_nombre: string | null;
-  holded_employee_id: string | null;
   avatar_gcs: string | null;
   ultimo_acceso_en: Date | string | null;
 };
@@ -190,28 +188,14 @@ export async function eliminarPerfil(
 
 export async function listarUsuariosInternos(): Promise<UsuarioInternoAsignacion[]> {
   const pool = await getPool();
-  let rows: UsuarioRow[];
-  try {
-    const [r] = await pool.execute<UsuarioRow[]>(
-      `SELECT u.id, u.nombre, u.correo, u.es_admin, u.perfil_id, p.nombre AS perfil_nombre,
-              u.holded_employee_id, u.avatar_gcs, u.ultimo_acceso_en
-       FROM usuarios u
-       LEFT JOIN perfiles p ON p.id = u.perfil_id
-       WHERE u.rol = 'interna'
-       ORDER BY u.nombre ASC`,
-    );
-    rows = r;
-  } catch {
-    const [r] = await pool.execute<UsuarioRow[]>(
-      `SELECT u.id, u.nombre, u.correo, u.es_admin, u.perfil_id, p.nombre AS perfil_nombre,
-              NULL AS holded_employee_id, u.avatar_gcs, u.ultimo_acceso_en
-       FROM usuarios u
-       LEFT JOIN perfiles p ON p.id = u.perfil_id
-       WHERE u.rol = 'interna'
-       ORDER BY u.nombre ASC`,
-    );
-    rows = r;
-  }
+  const [rows] = await pool.execute<UsuarioRow[]>(
+    `SELECT u.id, u.nombre, u.correo, u.es_admin, u.perfil_id, p.nombre AS perfil_nombre,
+            u.avatar_gcs, u.ultimo_acceso_en
+     FROM usuarios u
+     LEFT JOIN perfiles p ON p.id = u.perfil_id
+     WHERE u.rol = 'interna'
+     ORDER BY u.nombre ASC`,
+  );
 
   const result: UsuarioInternoAsignacion[] = [];
   for (const r of rows) {
@@ -240,7 +224,6 @@ export async function listarUsuariosInternos(): Promise<UsuarioInternoAsignacion
       esAdmin: Boolean(r.es_admin),
       perfilId: r.perfil_id,
       perfilNombre: r.perfil_nombre,
-      holdedEmployeeId: r.holded_employee_id?.trim() || null,
       permisos,
       avatarUrl: urlAvatarDe(r.id, r.avatar_gcs),
       ultimoAccesoEn: acceso && !Number.isNaN(Date.parse(acceso)) ? acceso : null,
